@@ -1,6 +1,17 @@
 from fastapi import APIRouter
 
 from . import bulk_actions, comments, exports, recipe_crud_routes, shared_routes, timeline_events
+from .recipe_variations import router as recipe_variations_router
+
+__all__ = [
+    "bulk_actions",
+    "comments",
+    "exports",
+    "recipe_crud_routes",
+    "shared_routes",
+    "timeline_events",
+    "recipe_variations_router",
+]
 
 prefix = "/recipes"
 

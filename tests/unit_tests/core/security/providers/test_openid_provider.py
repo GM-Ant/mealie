@@ -1,6 +1,7 @@
+import logging
+
 import pytest
 from pytest import MonkeyPatch, Session
-import logging
 
 from mealie.core.config import get_app_settings
 from mealie.core.security.providers.openid_provider import OpenIDProvider

@@ -47,6 +47,16 @@ class RecipeModel(SqlAlchemyBase, BaseMixins):
     id: Mapped[GUID] = mapped_column(GUID, primary_key=True, default=GUID.generate)
     slug: Mapped[str | None] = mapped_column(sa.String, index=True)
 
+    # Variation Fields
+    parent_id: Mapped[GUID | None] = mapped_column(GUID, sa.ForeignKey("recipes.id"), index=True)
+    is_variation: Mapped[bool] = mapped_column(sa.Boolean, default=False, index=True)
+    parent: Mapped["RecipeModel"] = orm.relationship(
+        "RecipeModel", remote_side=[id], back_populates="variations", foreign_keys=[parent_id]
+    )
+    variations: Mapped[list["RecipeModel"]] = orm.relationship(
+        "RecipeModel", back_populates="parent", cascade="all, delete-orphan", foreign_keys=[parent_id]
+    )
+
     # ID Relationships
     group_id: Mapped[GUID] = mapped_column(GUID, sa.ForeignKey("groups.id"), nullable=False, index=True)
     group: Mapped["Group"] = orm.relationship("Group", back_populates="recipes", foreign_keys=[group_id])
@@ -175,6 +185,21 @@ class RecipeModel(SqlAlchemyBase, BaseMixins):
     def validate_name(self, _, name):
         assert name != ""
         return name
+
+    @validates("parent_id")
+    def validate_parent(self, _, parent_id):
+        if parent_id:
+            # Prevent self-reference
+            if parent_id == self.id:
+                raise ValueError("Recipe cannot be its own parent")
+
+            # Prevent circular references
+            parent = self.parent
+            while parent:
+                if parent.id == self.id:
+                    raise ValueError("Circular reference detected in recipe variations")
+                parent = parent.parent
+        return parent_id
 
     @api_extras
     @auto_init()

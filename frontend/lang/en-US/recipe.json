@@ -1,0 +1,12 @@
+{
+    "variations": "Variations",
+    "select-variation": "Select Variation",
+    "no-variations": "No variations available",
+    "variation-management": "Variation Management",
+    "create-variation": "Create Variation",
+    "delete-variation": "Delete Variation",
+    "details": "Recipe Details",
+    "name": "Name",
+    "description": "Description",
+    "variation-of": "This is a variation of {name}"
+}
